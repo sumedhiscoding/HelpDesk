@@ -2,29 +2,31 @@
 const express = require("express");
 const dotenv = require("dotenv").config();
 const axios = require("axios");
-const http=require("http");
-const mongoose=require("mongoose");
-const Message=require("./models/Message")
-const socketIo = require('socket.io');
-const cors=require("cors");
+const http = require("http");
+const mongoose = require("mongoose");
+const Message = require("./models/Message");
+const socketIo = require("socket.io");
+const cors = require("cors");
 // Creating an Express application
 const app = express();
-const allowedOrigins = ['http://localhost:5173']; // Add the origin of your React app
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-}));
+const allowedOrigins = ["http://localhost:5173"]; // Add the origin of your React app
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
 const port = 3000;
 const server = http.createServer(app);
-const io = socketIo(server,{
+const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:5173', // Add the origin of your React app
-    methods: ['GET', 'POST'],
+    origin: "http://localhost:5173", // Add the origin of your React app
+    methods: ["GET", "POST"],
   },
 });
 const VERIFY_TOKEN = "token";
@@ -32,19 +34,22 @@ const VERIFY_TOKEN = "token";
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 //mongoose connection
-mongoose.connect('mongodb://localhost:27017/HelpDeskDb').then(()=>{
-  console.log("sucessfully connected to MongoDB")
-}).catch(err => console.log(err));
+mongoose
+  .connect("mongodb://localhost:27017/HelpDeskDb")
+  .then(() => {
+    console.log("sucessfully connected to MongoDB");
+  })
+  .catch((err) => console.log(err));
 
 //websocket connection
-io.on('connection', (socket) => {
-  console.log('Client connected');
+io.on("connection", (socket) => {
+  console.log("Client connected");
 
   // Send a welcome message to the client
   // socket.emit('message', 'Welcome to the WebSocket server');
 
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
   });
 });
 
@@ -64,10 +69,10 @@ app.get("/webhook", (req, res) => {
   }
 });
 
-app.post('/webhook', async (req, res) => {
+app.post("/webhook", async (req, res) => {
   const body = req.body;
 
-  if (body.object === 'page') {
+  if (body.object === "page") {
     const messagingEvents = body.entry[0].messaging;
 
     // Iterate through messaging events
@@ -85,10 +90,10 @@ app.post('/webhook', async (req, res) => {
 
       try {
         await newMessage.save();
-        console.log('Message saved successfully');
+        console.log("Message saved successfully");
 
         // Send the new message to all connected socket.io clients
-        io.emit('message', {
+        io.emit("message", {
           senderId: sender.id,
           recipientId: recipient.id,
           timestamp,
@@ -96,24 +101,20 @@ app.post('/webhook', async (req, res) => {
           messageText: message.text,
         });
       } catch (error) {
-        console.error('Error saving message:', error);
+        console.error("Error saving message:", error);
       }
 
       // Handle different types of events here
     });
 
-    res.status(200).send('EVENT_RECEIVED');
+    res.status(200).send("EVENT_RECEIVED");
   } else {
     res.sendStatus(404);
   }
 });
 
-
-
-app.get("/pageId&AT", async (req, res) => {
+app.get("/pageId", async (req, res) => {
   const url = `${process.env.FACEBOOK_GRAPH_API}/me?fields=id%2Cname&access_token=${process.env.USER_ACCESS_TOKEN}`;
-  // 3565706460408375/accounts
-  // console.log(process.env.FACEBOOK_GRAPH_API);
   console.log(url);
   try {
     const response = await axios.get(url);
@@ -129,7 +130,7 @@ app.get("/pageId&AT", async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-app.get("/pageId", async (req, res) => {
+app.get("/pageId&pageToken", async (req, res) => {
   const url = `${process.env.FACEBOOK_GRAPH_API}/me/accounts?access_token=${process.env.USER_ACCESS_TOKEN}`;
   try {
     const response = await axios.get(url);
@@ -145,9 +146,11 @@ app.get("/pageId", async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-app.get("/getconversations", async (req, res) => {
+app.post("/getconversations", async (req, res) => {
+  console.log(req.body);
   const { PageAccessToken, PageId } = req.body;
-  const url = `${process.env.FACEBOOK_GRAPH_API}/${PageId}/conversations?fields=participants,messages{id,message}&access_token=${PageAccessToken}`;
+  console.log(PageAccessToken, PageId);
+  const url = `${process.env.FACEBOOK_GRAPH_API}/${PageId}/conversations?fields=participants,messages{id,message,from,to}&access_token=${PageAccessToken}`;
   console.log(url);
   try {
     const response = await axios.get(url);
@@ -158,6 +161,32 @@ app.get("/getconversations", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: error.message });
+  }
+});
+app.post("/get-convos-user-ids", async (req, res) => {
+  //we should be able to get the full conversation using the conversatio id
+  const { userId1, userId2 } = req.body;
+  const getMessagesInSameConversation = async (userId1, userId2) => {
+    const messages = await Message.find({
+      $or: [
+        {
+          $and: [{ senderId: userId1 }, { recipientId: userId2 }],
+        },
+        {
+          $and: [{ senderId: userId2 }, { recipientId: userId1 }],
+        },
+      ],
+    }).exec();
+
+    return messages;
+  };
+  try {
+    const response =await getMessagesInSameConversation(userId1, userId2);
+    console.log(response);
+    res.send("hi got")
+  } catch (error) {
+    console.log(error.message);
+    res.send("not got");
   }
 });
 
@@ -200,6 +229,7 @@ app.get("/", (req, res) => {
 
 app.post("/send-message", async (req, res) => {
   const { message, PageScopedId, PageAccessToken, PageId } = req.body;
+  console.log(PageScopedId," ",PageAccessToken," ",message," ",PageId);
   const url = `${process.env.FACEBOOK_GRAPH_API}/${PageId}/messages?recipient={id:${PageScopedId}}&message={text:"${message}"}&messaging_type=RESPONSE&access_token=${PageAccessToken}`;
   console.log(url);
 
@@ -208,17 +238,25 @@ app.post("/send-message", async (req, res) => {
     console.log(response.data);
 
     // Save the relevant data to MongoDB
-    const {  recipient_id , message_id } = response.data;
+    const { recipient_id, message_id } = response.data;
     const newMessage = new Message({
-      senderId: PageScopedId,
-      recipientId: recipient_id,
-      timestamp: new Date(timestamp), // Convert to Date object
+      senderId: recipient_id,
+      recipientId: PageScopedId,
+      timestamp: new Date(), // Convert to Date object
       messageId: message_id,
       messageText: message,
     });
 
     await newMessage.save();
-    
+
+    io.emit("message", {
+      senderId: PageId,
+      recipientId: PageScopedId,
+      timestamp:new Date(),
+      messageId: message_id,
+      messageText: message,
+    });
+
     res.status(200).json({ message: "message sent" });
   } catch (err) {
     console.error(err.message);
