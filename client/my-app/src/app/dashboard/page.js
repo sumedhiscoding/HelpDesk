@@ -7,6 +7,7 @@ import MainConversation from "../components/MainConversation";
 import Information from "../components/Information";
 import Conversations from "../components/Conversations";
 import { MessageProvider, useMessageContext } from "../contexts/MessageContext";
+import { useUserContext } from "../contexts/userContext";
 
 const PAGE_ACCESS_TOKEN =
   "EAAFOSMP8bxYBOZBdT0fJ6XwCnWlTc9PdxagPSa8Pc8qztVfS1GzAUOWVJAZAmqw1qxEMkEcUy6y2L9CZCGjDppbRZA8AvpQAOufFGXYpfHPNauTf1JPhic9Pam70VZAEgincZCElpMTY4lbh2UN5lSNDfc9LUejxZChuMuXqcnf0VRLKOyhuGRxeBwTFrl3vbDi";
@@ -64,16 +65,7 @@ const page = () => {
   const handleMessage = (data) => {
     console.log("Received message from server:", data);
     // addMessage(data);
-    //we need to create an object that we need to add it to our conversation
-    //we need to find the participant whose id matches our sender's id
-    // console.log("insdie handlemessage", conversations);
 
-    // console.log("senderId",data.senderId);
-    // if(data?.senderId===PAGE_ID){
-    //     const filtered = conversations?.filter((conv,idx)=>{
-    //         return conv.participants.data[0].id === data?.recipient.id;
-    //       });
-    // }
     if (data.senderId === PAGE_ID) {
       const filtered = conversations.filter((conv) => {
         return conv.participants.data[0].id === data?.recipientId;
@@ -164,19 +156,22 @@ const page = () => {
       setConversations(newConversation);
     }
   };
+
   return (
     <div>
-      <div className="grid grid-cols-3 h-screen">
-        <div className="bg-slate-400">
-          <Conversations />
+      {
+        <div className="grid grid-cols-3 h-screen">
+          <div className="bg-slate-400">
+            <Conversations />
+          </div>
+          <div>
+            <MainConversation />
+          </div>
+          <div>
+            <Information />
+          </div>
         </div>
-        <div>
-          <MainConversation />
-        </div>
-        <div>
-          <Information />
-        </div>
-      </div>
+      }
     </div>
   );
 };
