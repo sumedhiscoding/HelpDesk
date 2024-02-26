@@ -9,7 +9,7 @@ const Conversations = () => {
     // console.log("conversations",conversations);
   return (
     <div className="h-screen overflow-auto">
-      <div className="text-3xl p-4 font-mono font-semibold text-emerald-800 border-b-4"  >
+      <div className="text-3xl p-4 font-mono font-semibold border-b-4"  >
 
       Conversations
       </div>

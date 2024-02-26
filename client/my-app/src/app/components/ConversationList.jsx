@@ -36,12 +36,12 @@ const ConversationsList = () => {
         );
 
         return (
-          <div key={conversation.id} className="border rounded-md p-4 shadow-lg mb-4 hover:shadow-xl transition duration-300 ease-in-out">
+          <div key={conversation.id} className="border rounded-md p-4 shadow-2xl mb-4 hover:shadow-xl transition duration-300 ease-in-out">
             <ul>
               {filteredParticipants.map((participant) => (
                 <li
                   key={participant.id}
-                  className="flex items-center justify-between bg-gradient-to-r from-teal-400 to-teal-500 text-white p-4 rounded-md cursor-pointer hover:bg-teal-600 transition duration-300 ease-in-out"
+                  className="flex items-center justify-between bg-white  text-black p-4 rounded-md cursor-pointer hover:bg-zinc-200 transition duration-300 ease-in-out"
                   onClick={() => {
                     setId(conversation.id);
                     handleOnClick(conversation.id);
@@ -49,7 +49,7 @@ const ConversationsList = () => {
                 >
                   <div>
                     <span className="font-bold text-lg">{participant.name}</span>
-                    <p className="text-gray-300 text-sm">Email: {participant.email}</p>
+                    <p className="text-black text-sm">Email: {participant.email}</p>
                   </div>
                 </li>
               ))}

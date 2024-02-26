@@ -12,11 +12,11 @@ const MainConversation = () => {
   }, [newconvo, selectedConversation]);
 
   return (
-    <div className="h-screen bg-[url('/background-img.jpg')] bg-cover overflow-auto scrollbar-thin scrollbar-thumb-black scrollbar-track-black">
+    <div className="h-screen bg-[url('/background-img.jpg')] bg-cover ">
       {newconvo && (
-        <div style={{ position: "relative" }}>
+        <div style={{ position: "relative" }} className="h-screen">
           <div>Top Bar</div>
-          <div style={{ overflowY: "auto", height: "calc(100% - 60px)" }}>
+          <div style={{ overflowY: "auto", height: "calc(100% - 90px)" }}>
             {newconvo?.data?.toReversed().map((message, index) => {
               const isHelperDesk = message.from.name === "HelperDesk";
               const messageClass = isHelperDesk ? "justify-end" : "justify-start";

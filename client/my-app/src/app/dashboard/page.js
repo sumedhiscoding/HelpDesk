@@ -161,14 +161,14 @@ const page = () => {
     <div>
       {
         <div className="grid grid-cols-3 h-screen">
-          <div className="bg-slate-400">
+          <div className="">
             <Conversations />
           </div>
           <div>
             <MainConversation />
           </div>
           <div>
-            {/* <Information /> */}
+            <Information />
           </div>
         </div>
       }
