@@ -168,7 +168,7 @@ const page = () => {
             <MainConversation />
           </div>
           <div>
-            <Information />
+            {/* <Information /> */}
           </div>
         </div>
       }

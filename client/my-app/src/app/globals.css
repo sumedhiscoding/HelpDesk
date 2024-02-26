@@ -2,4 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Thin black scrollbar */
+::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    margin:0.2rem;
+    background-color: darkslategrey;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background-color: black;
+  }
 
+  

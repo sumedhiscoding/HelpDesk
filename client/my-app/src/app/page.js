@@ -12,9 +12,9 @@ import {useRouter} from "next/navigation"
 function Page() {
   const router=useRouter();
   
-  useEffect(()=>{
-    router.push('/login');
-  },[])
+  // useEffect(()=>{
+  //   router.push('/login');
+  // },[])
 
 
   return (

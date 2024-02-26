@@ -2,59 +2,57 @@ import React, { useState, useEffect } from "react";
 import { useMessageContext } from "../contexts/MessageContext";
 import { Formik, Field, Form } from "formik";
 import { SendMessage } from "@/utilities/SendMessage";
-const MainConversation = () => {
 
-  const {conversations, selectedConversation,setSelectedConversation } = useMessageContext();
-  const [newconvo,setNewConvo]=useState(selectedConversation);
+const MainConversation = () => {
+  const { conversations, selectedConversation, setSelectedConversation } = useMessageContext();
+  const [newconvo, setNewConvo] = useState(selectedConversation);
+
   useEffect(() => {
-    console.log("selectedConversation",selectedConversation)
-    console.log("conversations",conversations);
     setNewConvo(selectedConversation);
-        
- 
-  }, [newconvo,selectedConversation]);
+  }, [newconvo, selectedConversation]);
 
   return (
-    <div>
+    <div className="h-screen bg-[url('/background-img.jpg')] bg-cover overflow-auto scrollbar-thin scrollbar-thumb-black scrollbar-track-black">
       {newconvo && (
-        <div>
-            {console.log("newconvo",newconvo)}
+        <div style={{ position: "relative" }}>
           <div>Top Bar</div>
-          <div classname="overflow-auto">
-            {newconvo?.data?.toReversed().map((message) => {
-              if (message.from.name == "HelperDesk") {
-                return <div className="bg-blue-400 flex justify-end">{message.message}</div>;
-              } else
-                return <div className="bg-red-500 flex justify-start"> {message.message}</div>;
+          <div style={{ overflowY: "auto", height: "calc(100% - 60px)" }}>
+            {newconvo?.data?.toReversed().map((message, index) => {
+              const isHelperDesk = message.from.name === "HelperDesk";
+              const messageClass = isHelperDesk ? "justify-end" : "justify-start";
+              const bgClass = isHelperDesk ? "bg-teal-500 text-white" : "bg-fuchsia-500 text-white";
+
+              return (
+                <div key={index} className={`flex ${messageClass}`}>
+                  <div className={`h-4 ${bgClass}  rounded-md p-5 m-2 flex justify-center items-center origin-bottom-right rounded-sm`}>
+                    {message.message}
+                  </div>
+                </div>
+              );
             })}
           </div>
-          <div>
+          <div style={{ position: "sticky", bottom: 0, padding: "10px", background: "white" }}>
             <Formik
               initialValues={{
                 message: "",
               }}
               onSubmit={async (values) => {
-                // console.log(values);
-                //we need to get pageSCopedId
                 const id = newconvo?.data?.find((message) => {
-                  if (message.from.name != "HelperDesk") {
+                  if (message.from.name !== "HelperDesk") {
                     return message.from.id;
                   }
                 });
-                // console.log("found id", id);
-
                 const receivingId = id.from.id;
                 const payload = {
                   message: values.message,
                   PageScopedId: receivingId,
                 };
-                // console.log("payload ", payload);
                 SendMessage(payload);
               }}
             >
               <Form>
-                <Field id="Message" name="message" placeholder="Type Here" />
-                <button type="submit">Submit</button>
+                <Field id="Message" name="message" placeholder="Type Here" className="w-4/6 p-3 bg-emerald-200 rounded-lg " />
+                <button type="submit" className="mx-5 bg-black text-white rounded-md p-2">Submit</button>
               </Form>
             </Formik>
           </div>
