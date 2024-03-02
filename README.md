@@ -17,7 +17,11 @@ The HelpDesk App is a web application designed to streamline and enhance custome
 ## Demo Video
 
 <!-- Embedding Video -->
-<iframe allow="fullscreen" allowfullscreen height="400" src="https://streamable.com/e/jauwae?nocontrols=1" width="100%" style="border:none; width:100%; height:100%; position:relative; overflow:hidden;"></iframe>
+
+
+https://github.com/sumedhiscoding/HelpDesk/assets/66994315/40c4cfa9-c585-4203-bcb6-8917c45846af
+
+
 
 
 
