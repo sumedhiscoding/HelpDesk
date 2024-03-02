@@ -1,5 +1,10 @@
 # HelpDesk App
+## Demo Video
 
+<!-- Embedding Video -->
+
+
+https://github.com/sumedhiscoding/HelpDesk/assets/66994315/40c4cfa9-c585-4203-bcb6-8917c45846af
 ## Overview
 
 The HelpDesk App is a web application designed to streamline and enhance customer support by providing a centralized interface for managing and responding to messages from multiple users on Facebook pages. The application is built using Next.js for the frontend, Express for the backend, and Firebase for authentication. Real-time updates of messages are facilitated through the use of Socket.IO.
@@ -14,12 +19,7 @@ The HelpDesk App is a web application designed to streamline and enhance custome
 
 4. **Real-time Updates:** Utilizing Socket.IO, the app ensures real-time updates for incoming messages, providing a responsive and dynamic user experience.
 
-## Demo Video
 
-<!-- Embedding Video -->
-
-
-https://github.com/sumedhiscoding/HelpDesk/assets/66994315/40c4cfa9-c585-4203-bcb6-8917c45846af
 
 
 
